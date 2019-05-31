@@ -6,7 +6,15 @@
           background-color: #ddd;
         }
         
-        #myBar {
+        #kokamBar {
+          width: 0%;
+          height: 30px;
+          background-color: #4CAF50;
+          text-align: center; 
+          line-height: 32px; 
+          color: black;
+        }
+        #segwayBar {
           width: 0%;
           height: 30px;
           background-color: #4CAF50;
@@ -60,7 +68,7 @@
       + result.battery_state
       + ' Charge percentage: '
       + result.percentage); 
-      var elem = document.getElementById("myBar");
+      var elem = document.getElementById("kokamBar");
       if (result.battery_state == 0){
         elem.style.backgroundColor= "#42d644";
         elem.innerHTML = 'Kokam: ' + result.percentage  + '%';
@@ -83,6 +91,49 @@
       }
   });
   },60000);
+
+  // Calling a service
+  // -----------------
+  setInterval(function callSegwayBatteryService(){
+  var segwayBatteryStateClient = new ROSLIB.Service({
+    ros : ros,
+    name : '/segway_battery_state',
+    serviceType : 'vizzy_msgs/BatteryState'
+  });
+
+  var request = new ROSLIB.ServiceRequest({
+    });
+
+  segwayBatteryStateClient.callService(request, function(result) {
+    console.log('Result for service call on '
+      + segwayBatteryStateClient.name
+      + '; State: '
+      + result.battery_state
+      + ' Charge percentage: '
+      + result.percentage); 
+      var elem = document.getElementById("segwayBar");
+      if (result.battery_state == 0){
+        elem.style.backgroundColor= "#42d644";
+        elem.innerHTML = 'Segway: ' + result.percentage  + '%';
+        elem.style.width = result.percentage + '%';
+      }
+      else if (result.battery_state == 1){
+        elem.style.backgroundColor= "#e5d952";
+        elem.innerHTML = 'Segway: ' + result.percentage  + '%';
+        elem.style.width = result.percentage + '%';
+      }
+      else if (result.battery_state == 2){
+        elem.style.backgroundColor= "#bf0707";
+        elem.innerHTML = 'Segway: ' + result.percentage  + '%';
+        elem.style.width = result.percentage + '%';
+      }
+      else if (result.battery_state == 4){
+        elem.style.backgroundColor="#ffffff";
+        elem.innerHTML =  'Segway: UNKNOWN';
+        elem.style.width = result.percentage-1 + '%';
+      }
+  });
+  },60000);
   
 </script>
 </head>
@@ -90,7 +141,8 @@
 <body>
   <h1>Vizzy status</h1>
   <div id="myProgress">
-    <div id="myBar"></div>
+    <div id="kokamBar"></div>
+    <div id="segwayBar"></div>
   </div>
   <p>Check your Web Console for output.</p>
 </body>

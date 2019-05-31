@@ -1,10 +1,11 @@
 #include "ros/ros.h"
 #include <vizzy_msgs/BatteryState.h>
-#include <vizzy_sensors/VoltageCurrentSerialInterface.hpp>
-
-std::string *sensor_port;
+#include <segway_rmp/SegwayStatusStamped.h>
+std::string *segway_topic;
 double charged_voltage_threshold;
 double low_battery_threshold;
+double min_voltage = 60.0;
+double max_voltage = 70.2;
 
 uint8_t battery_state_logic(double voltage)
 {
@@ -28,13 +29,15 @@ uint8_t battery_state()
 
     double voltage;
     double current;
-    if (voltage_reader->getSystemPowerSupply(current, voltage) == 0)
-    {
-        return battery_state_logic(current, voltage);
-    }
+    boost::shared_ptr<segway_rmp::SegwayStatusStamped const> segway_status;
+  segway_status = ros::topic::waitForMessage<segway_rmp::SegwayStatusStamped>(*segway_topic, ros::Duration(5));
+  if (!segway_status)
+  {
+      return vizzy_msgs::BatteryStateResponse::UNKNOWN;
+  }
     else
     {
-        return vizzy_msgs::BatteryStateResponse::UNKNOWN;
+        return battery_state_logic(segway_status->segway.powerbase_battery);
     }
 }
 
@@ -48,29 +51,28 @@ bool query_state(vizzy_msgs::BatteryStateRequest &req,
 
 int main(int argc, char **argv)
 {
-    ros::init(argc, argv, "kokam_battery_state_server");
-    if (argc != 5)
+    ros::init(argc, argv, "segway_battery_state_server");
+    if (argc != 4)
     {
-        ROS_INFO("usage: kokam_battery_state_server </dev/ttyUSBX> <charge_tresh> <low_batt_tresh>");
+        ROS_INFO("usage: segway_battery_state_server </segway_topic> <charge_tresh> <low_batt_tresh>");
         return 1;
     }
     ros::NodeHandle n;
-    voltage_reader = new VoltageCurrentSerialInterface();
-    sensor_port = new std::string(argv[1]);
+    segway_topic = new std::string(argv[1]);
     charged_voltage_threshold = atof(argv[2]);
     low_battery_threshold = atof(argv[3]);
-    if (voltage_reader->initComm(*sensor_port))
-    {
-        cout << "Port: " << *sensor_port << " Charged threshold: " << charged_voltage_threshold
-             << " Low battery threshold: " << low_battery_threshold << endl;
-        ros::ServiceServer service = n.advertiseService("kokam_battery_state", query_state);
-        ROS_INFO("Ready to check the Kokam battery state.");
+    boost::shared_ptr<segway_rmp::SegwayStatusStamped const> segway_status;
+  segway_status = ros::topic::waitForMessage<segway_rmp::SegwayStatusStamped>(*segway_topic, ros::Duration(5));
+  if (!segway_status)
+  {
+      ROS_ERROR("Unable to connect to segway, check the buttons and the ROS node.");
+  }
+  else{
+      std::cout << "Segway topic: " << *segway_topic << " Charged threshold: " << charged_voltage_threshold
+             << " Low battery threshold: " << low_battery_threshold << std::endl;
+        ros::ServiceServer service = n.advertiseService("segway_battery_state", query_state);
+        ROS_INFO("Ready to check the Segway battery state.");
         ros::spin();
-    }
-    else
-    {
-        ROS_ERROR("Unable to connect to the battery state PCB.");
-    }
-    voltage_reader->closeComm();
+  }
     return 0;
 }

@@ -50,6 +50,17 @@ target_link_libraries(kokam_battery_state_service
   ${CMAKE_INSTALL_PREFIX}/lib/libserial.so
 )
 
+add_executable(segway_battery_state_service src/segway_battery_state_service.cpp)
+
+target_link_libraries(segway_battery_state_service 
+  ${Boost_LIBRARIES} 
+  ${catkin_LIBRARIES}
+  vizzy_battery_monitor_interface
+  ${CMAKE_INSTALL_PREFIX}/lib/libserial.so
+)
+
+
+
 add_executable(battery_charging_state_service src/battery_charging_state_service.cpp)
 
 target_link_libraries(battery_charging_state_service 

@@ -1,5 +1,5 @@
 <launch>
   <arg name="topic" default="/segway_rmp_node/segway_status" />
-  <node name="battery_charging_state_service_node" pkg="vizzy_sensors" type="battery_charging_state_service" 
-  args="$(arg port)" output="screen"/>
+  <node name="battery_charging_state_service_node" pkg="vizzy_serial_interfaces" type="battery_charging_state_service" 
+  args="$(arg topic)" output="screen"/>
 </launch>

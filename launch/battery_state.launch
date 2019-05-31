@@ -2,6 +2,6 @@
   <arg name="port" default="/dev/kokam_power" />
   <arg name="cha_thr" default="29.39" />
   <arg name="low_thr" default="24.5" />
-  <node name="kokam_battery_state_service_node" pkg="vizzy_sensors" type="kokam_battery_state_service" 
+  <node name="kokam_battery_state_service_node" pkg="vizzy_serial_interfaces" type="kokam_battery_state_service" 
   args="$(arg port) $(arg cha_thr) $(arg low_thr)" output="screen"/>
 </launch>
