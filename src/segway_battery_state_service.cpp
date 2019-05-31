@@ -9,6 +9,7 @@ double max_voltage = 70.2;
 
 uint8_t battery_state_logic(double voltage)
 {
+  std::cout << "Voltage :" << voltage << std::endl;
     if (voltage > charged_voltage_threshold)
     {
         return vizzy_msgs::BatteryStateResponse::CHARGED;
@@ -23,7 +24,7 @@ uint8_t battery_state_logic(double voltage)
     }
 }
 
-uint8_t battery_state()
+uint8_t battery_state(uint8_t &state,uint8_t &percentage)
 {
     //Compute state
 
@@ -33,19 +34,21 @@ uint8_t battery_state()
   segway_status = ros::topic::waitForMessage<segway_rmp::SegwayStatusStamped>(*segway_topic, ros::Duration(5));
   if (!segway_status)
   {
-      return vizzy_msgs::BatteryStateResponse::UNKNOWN;
+      state =  vizzy_msgs::BatteryStateResponse::UNKNOWN;
+      percentage = 101;
   }
     else
     {
-        return battery_state_logic(segway_status->segway.powerbase_battery);
+        state = battery_state_logic(segway_status->segway.powerbase_battery);
+	percentage = floor(100.0*segway_status->segway.powerbase_battery/max_voltage);
     }
 }
 
 bool query_state(vizzy_msgs::BatteryStateRequest &req,
                  vizzy_msgs::BatteryStateResponse &res)
 {
-    res.battery_state = battery_state();
-    ROS_INFO("sending back response: [%ld]", res.battery_state);
+    battery_state(res.battery_state,res.percentage);
+    ROS_INFO("sending back response: state [%ld] percentage [%d]", res.battery_state,res.percentage);
     return true;
 }
 
