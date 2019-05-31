@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html>
+    <style>
+        #myProgress {
+          width: 100%;
+          background-color: #ddd;
+        }
+        
+        #myBar {
+          width: 0%;
+          height: 30px;
+          background-color: #4CAF50;
+          text-align: center; 
+          line-height: 32px; 
+          color: black;
+        }
+        </style>
+<head>
+<meta charset="utf-8" />
+
+<script type="text/javascript" src="roslibjs/eventemitter2.js"></script>
+<script type="text/javascript" src="roslibjs/roslib.js"></script>
+
+<script type="text/javascript" type="text/javascript">
+  // Connecting to ROS
+  // -----------------
+
+  var ros = new ROSLIB.Ros({
+    url : 'ws://10.10.1.80:9090'
+  });
+
+  ros.on('connection', function() {
+    console.log('Connected to websocket server.');
+  });
+
+  ros.on('error', function(error) {
+    console.log('Error connecting to websocket server: ', error);
+  });
+
+  ros.on('close', function() {
+    console.log('Connection to websocket server closed.');
+  });
+
+  // Calling a service
+  // -----------------
+  setInterval(function callBatteryService(){
+  var kokamBatteryStateClient = new ROSLIB.Service({
+    ros : ros,
+    name : '/kokam_battery_state',
+    serviceType : 'vizzy_msgs/BatteryState'
+  });
+
+  var request = new ROSLIB.ServiceRequest({
+    });
+
+  kokamBatteryStateClient.callService(request, function(result) {
+    console.log('Result for service call on '
+      + kokamBatteryStateClient.name
+      + '; State: '
+      + result.battery_state
+      + ' Charge percentage: '
+      + result.percentage); 
+      var elem = document.getElementById("myBar");
+      if (result.battery_state == 0){
+        elem.style.backgroundColor= "#42d644";
+        elem.innerHTML = 'Kokam: ' + result.percentage  + '%';
+        elem.style.width = result.percentage + '%';
+      }
+      else if (result.battery_state == 1){
+        elem.style.backgroundColor= "#e5d952";
+        elem.innerHTML = 'Kokam: ' + result.percentage  + '%';
+        elem.style.width = result.percentage + '%';
+      }
+      else if (result.battery_state == 2){
+        elem.style.backgroundColor= "#bf0707";
+        elem.innerHTML = 'Kokam: ' + result.percentage  + '%';
+        elem.style.width = result.percentage + '%';
+      }
+      else if (result.battery_state == 4){
+        elem.style.backgroundColor="#ffffff";
+        elem.innerHTML =  'Kokam: UNKNOWN';
+        elem.style.width = result.percentage-1 + '%';
+      }
+  });
+  },60000);
+  
+</script>
+</head>
+
+<body>
+  <h1>Vizzy status</h1>
+  <div id="myProgress">
+    <div id="myBar"></div>
+  </div>
+  <p>Check your Web Console for output.</p>
+</body>
+</html>
