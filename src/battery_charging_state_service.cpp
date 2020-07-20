@@ -28,6 +28,9 @@ double l2_line_fitting(double x[], double y[])
   return est_slope;
 }
 
+/*
+This function is kept here for logging purposes
+*/
 uint8_t battery_charging_state()
 {
   double voltage[40];
