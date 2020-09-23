@@ -79,6 +79,13 @@ target_link_libraries(kokam_power_publisher
   ${CMAKE_INSTALL_PREFIX}/lib/libserial.so
 )
 
+add_executable(vizzy_batteries_state_service src/vizzy_batteries_state_service.cpp)
+
+target_link_libraries(vizzy_batteries_state_service 
+  ${Boost_LIBRARIES} 
+  ${catkin_LIBRARIES}
+)
+
 # Install the plugin and the plugin description
 install (DIRECTORY include/vizzy_sensors/
   DESTINATION ${CATKIN_PACKAGE_INCLUDE_DESTINATION})

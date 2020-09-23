@@ -1,0 +1,5 @@
+<launch>
+  <arg name="vizzy_machine_name" default="$(arg vizzy_machine_name)" />
+  <node machine="$(arg vizzy_machine_name)" name="vizzy_batteries_state_service_node" pkg="vizzy_serial_interfaces" type="vizzy_batteries_state_service" 
+  output="screen"/>
+</launch>
