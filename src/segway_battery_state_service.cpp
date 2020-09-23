@@ -1,4 +1,4 @@
-#include "ros/ros.h"
+#include "ros/ros.h"s
 #include <vizzy_msgs/BatteryState.h>
 #include <segway_rmp/SegwayStatusStamped.h>
 std::string *segway_topic;
@@ -9,19 +9,21 @@ double max_voltage = 70.2;
 
 uint8_t battery_state_logic(double voltage)
 {
-  std::cout << "Voltage :" << voltage << std::endl;
+  std::cout << "Voltage :" << voltage << " low_battery_threshold : " << low_battery_threshold << std::endl;
     if (voltage > charged_voltage_threshold)
     {
         return vizzy_msgs::BatteryStateResponse::CHARGED;
     }
-    else if (voltage < charged_voltage_threshold && voltage > low_battery_threshold)
+    else if (voltage <= charged_voltage_threshold && voltage > low_battery_threshold)
     {
         return vizzy_msgs::BatteryStateResponse::GOOD;
     }
-    else if (voltage < low_battery_threshold)
+    else if (voltage <= low_battery_threshold)
     {
         return vizzy_msgs::BatteryStateResponse::LOW_BATTERY;
     }
+    else
+	return vizzy_msgs::BatteryStateResponse::UNKNOWN;
 }
 
 uint8_t battery_state(uint8_t &state,uint8_t &percentage)
@@ -40,7 +42,7 @@ uint8_t battery_state(uint8_t &state,uint8_t &percentage)
     else
     {
         state = battery_state_logic(segway_status->segway.powerbase_battery);
-	percentage = floor(100.0*segway_status->segway.powerbase_battery/max_voltage);
+	percentage = floor(100.0*(segway_status->segway.powerbase_battery-min_voltage)/(max_voltage-min_voltage));
     }
 }
 

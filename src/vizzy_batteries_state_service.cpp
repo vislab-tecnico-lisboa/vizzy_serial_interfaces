@@ -14,22 +14,22 @@ bool query_state(vizzy_msgs::BatteryStateRequest &req,
 
     if (kokam_srv_client.response.battery_state == vizzy_msgs::BatteryStateResponse::LOW_BATTERY || 
         segway_srv_client.response.battery_state == vizzy_msgs::BatteryStateResponse::LOW_BATTERY){
-            return vizzy_msgs::BatteryStateResponse::LOW_BATTERY;
+            res.battery_state = vizzy_msgs::BatteryStateResponse::LOW_BATTERY;
     }
     else if (kokam_srv_client.response.battery_state == vizzy_msgs::BatteryStateResponse::GOOD && 
         segway_srv_client.response.battery_state == vizzy_msgs::BatteryStateResponse::GOOD){
-            return vizzy_msgs::BatteryStateResponse::GOOD;
+            res.battery_state = vizzy_msgs::BatteryStateResponse::GOOD;
         }
     else if (kokam_srv_client.response.battery_state == vizzy_msgs::BatteryStateResponse::CHARGED && 
         segway_srv_client.response.battery_state == vizzy_msgs::BatteryStateResponse::GOOD){
-            return vizzy_msgs::BatteryStateResponse::CHARGED;
+            res.battery_state = vizzy_msgs::BatteryStateResponse::CHARGED;
         }
     else if (kokam_srv_client.response.battery_state == vizzy_msgs::BatteryStateResponse::GOOD && 
         segway_srv_client.response.battery_state == vizzy_msgs::BatteryStateResponse::CHARGED){
-            return vizzy_msgs::BatteryStateResponse::CHARGED;
+            res.battery_state = vizzy_msgs::BatteryStateResponse::CHARGED;
         }
     else{
-        return vizzy_msgs::BatteryStateResponse::UNKNOWN;
+        res.battery_state = vizzy_msgs::BatteryStateResponse::UNKNOWN;
     }
 
     ROS_INFO("sending back response: state [%ld]", res.battery_state);
@@ -39,11 +39,6 @@ bool query_state(vizzy_msgs::BatteryStateRequest &req,
 int main(int argc, char **argv)
 {
     ros::init(argc, argv, "vizzy_batteries_state_server");
-    if (argc != 4)
-    {
-        ROS_INFO("usage: vizzy_batteries_state_server");
-        return 1;
-    }
     ros::NodeHandle n;
     kokam_battery_client = n.serviceClient<vizzy_msgs::BatteryState>("kokam_battery_state");
     segway_battery_client= n.serviceClient<vizzy_msgs::BatteryState>("segway_battery_state");

@@ -15,14 +15,16 @@ uint8_t battery_state_logic(double current, double voltage)
     {
         return vizzy_msgs::BatteryStateResponse::CHARGED;
     }
-    else if (voltage < charged_voltage_threshold && voltage > low_battery_threshold)
+    else if (voltage <= charged_voltage_threshold && voltage > low_battery_threshold)
     {
         return vizzy_msgs::BatteryStateResponse::GOOD;
     }
-    else if (voltage < low_battery_threshold)
+    else if (voltage <= low_battery_threshold)
     {
         return vizzy_msgs::BatteryStateResponse::LOW_BATTERY;
     }
+    else
+	return vizzy_msgs::BatteryStateResponse::UNKNOWN;
 }
 
 void battery_state(uint8_t &state,uint8_t &percentage)
