@@ -4,6 +4,7 @@
 std::string *segway_topic;
 double charged_voltage_threshold;
 double low_battery_threshold;
+double medium_battery_threshold;
 double min_voltage = 60.0;
 double max_voltage = 70.2;
 
@@ -14,9 +15,13 @@ uint8_t battery_state_logic(double voltage)
     {
         return vizzy_msgs::BatteryStateResponse::CHARGED;
     }
-    else if (voltage <= charged_voltage_threshold && voltage > low_battery_threshold)
+    else if (voltage <= charged_voltage_threshold && voltage > medium_battery_threshold)
     {
         return vizzy_msgs::BatteryStateResponse::GOOD;
+    }
+    else if (voltage <= medium_battery_threshold && voltage > low_battery_threshold)
+    {
+        return vizzy_msgs::BatteryStateResponse::MEDIUM;
     }
     else if (voltage <= low_battery_threshold)
     {
@@ -57,15 +62,16 @@ bool query_state(vizzy_msgs::BatteryStateRequest &req,
 int main(int argc, char **argv)
 {
     ros::init(argc, argv, "segway_battery_state_server");
-    if (argc != 4)
+    if (argc != 5)
     {
-        ROS_INFO("usage: segway_battery_state_server </segway_topic> <charge_tresh> <low_batt_tresh>");
+      ROS_INFO("usage: segway_battery_state_server </segway_topic> <charge_tresh> <low_batt_tresh> <medium_thresh>");
         return 1;
     }
     ros::NodeHandle n;
     segway_topic = new std::string(argv[1]);
     charged_voltage_threshold = atof(argv[2]);
     low_battery_threshold = atof(argv[3]);
+    medium_battery_threshold = atof(argv[4]);
     boost::shared_ptr<segway_rmp::SegwayStatusStamped const> segway_status;
   segway_status = ros::topic::waitForMessage<segway_rmp::SegwayStatusStamped>(*segway_topic, ros::Duration(5));
   if (!segway_status)
@@ -74,7 +80,7 @@ int main(int argc, char **argv)
   }
   else{
       std::cout << "Segway topic: " << *segway_topic << " Charged threshold: " << charged_voltage_threshold
-             << " Low battery threshold: " << low_battery_threshold << std::endl;
+		<< " Low battery threshold: " << low_battery_threshold  << " Medium battery threshold: " << medium_battery_threshold << std::endl;
         ros::ServiceServer service = n.advertiseService("segway_battery_state", query_state);
         ROS_INFO("Ready to check the Segway battery state.");
         ros::spin();

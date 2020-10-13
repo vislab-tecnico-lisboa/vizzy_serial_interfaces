@@ -28,6 +28,10 @@ bool query_state(vizzy_msgs::BatteryStateRequest &req,
         segway_srv_client.response.battery_state == vizzy_msgs::BatteryStateResponse::CHARGED){
             res.battery_state = vizzy_msgs::BatteryStateResponse::CHARGED;
         }
+    else if (kokam_srv_client.response.battery_state == vizzy_msgs::BatteryStateResponse::MEDIUM ||
+        segway_srv_client.response.battery_state == vizzy_msgs::BatteryStateResponse::MEDIUM){
+            res.battery_state = vizzy_msgs::BatteryStateResponse::MEDIUM;
+        }
     else{
         res.battery_state = vizzy_msgs::BatteryStateResponse::UNKNOWN;
     }

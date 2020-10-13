@@ -3,6 +3,7 @@
   <arg name="port" default="/dev/kokam_power" />
   <arg name="cha_thr" default="29.39" />
   <arg name="low_thr" default="24.5" />
+  <arg name="med_thr" default="25.5" />
   <node machine="$(arg vizzy_machine_name)" name="kokam_battery_state_service_node" pkg="vizzy_serial_interfaces" type="kokam_battery_state_service" 
-  args="$(arg port) $(arg cha_thr) $(arg low_thr)" output="screen"/>
+  args="$(arg port) $(arg cha_thr) $(arg low_thr) $(arg med_thr)" output="screen"/>
 </launch>

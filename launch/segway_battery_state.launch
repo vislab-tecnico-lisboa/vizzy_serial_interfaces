@@ -3,6 +3,7 @@
   <arg name="topic" default="/segway_rmp_node/segway_status" />
   <arg name="cha_thr" default="70.0" />
   <arg name="low_thr" default="62.5" />
+  <arg name="med_thr" default="65.0" />
   <node machine="$(arg vizzy_machine_name)" name="segway_battery_state_service_node" pkg="vizzy_serial_interfaces" type="segway_battery_state_service" 
-  args="$(arg topic) $(arg cha_thr) $(arg low_thr)" output="screen"/>
+  args="$(arg topic) $(arg cha_thr) $(arg low_thr) $(arg med_thr)" output="screen"/>
 </launch>
