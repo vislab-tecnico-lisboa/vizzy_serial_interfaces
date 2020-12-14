@@ -39,6 +39,9 @@ ${Boost_LIBRARIES}
   ${catkin_LIBRARIES}
   ${CMAKE_INSTALL_PREFIX}/lib/libserial.so
 )
+
+add_dependencies(vizzy_battery_monitor_interface vizzy_msgs_generate_messages_cpp)
+
 #add_executable(battery_monitor_example src/VoltageCurrentSerialInterface.cpp)
 
 add_executable(kokam_battery_state_service src/battery_state_service.cpp)
@@ -59,6 +62,8 @@ target_link_libraries(segway_battery_state_service
   ${CMAKE_INSTALL_PREFIX}/lib/libserial.so
 )
 
+add_dependencies(segway_battery_state_service vizzy_msgs_generate_messages_cpp)
+
 
 
 add_executable(battery_charging_state_service src/battery_charging_state_service.cpp)
@@ -70,6 +75,8 @@ target_link_libraries(battery_charging_state_service
   ${CMAKE_INSTALL_PREFIX}/lib/libserial.so
 )
 
+add_dependencies(battery_charging_state_service vizzy_msgs_generate_messages_cpp)
+
 add_executable(kokam_power_publisher src/kokam_power_publisher.cpp)
 
 target_link_libraries(kokam_power_publisher 
@@ -79,12 +86,16 @@ target_link_libraries(kokam_power_publisher
   ${CMAKE_INSTALL_PREFIX}/lib/libserial.so
 )
 
+add_dependencies(kokam_power_publisher vizzy_msgs_generate_messages_cpp)
+
 add_executable(vizzy_batteries_state_service src/vizzy_batteries_state_service.cpp)
 
 target_link_libraries(vizzy_batteries_state_service 
   ${Boost_LIBRARIES} 
   ${catkin_LIBRARIES}
 )
+
+add_dependencies(vizzy_batteries_state_service vizzy_msgs_generate_messages_cpp)
 
 # Install the plugin and the plugin description
 install (DIRECTORY include/vizzy_sensors/
