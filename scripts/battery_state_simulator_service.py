@@ -30,7 +30,7 @@ def main_loop():
     rate = rospy.Rate(fs) # 10hz
     global battery_percentage
 
-    s = rospy.Service('vizzy_batteries_state_server', BatteryState, check_battery_srv)
+    s = rospy.Service('vizzy_batteries_state', BatteryState, check_battery_srv)
 
     while not rospy.is_shutdown():
         battery_percentage = int(raw_input("Enter new percentage: ")) 
